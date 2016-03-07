@@ -10,6 +10,8 @@ Author: Santiago Narváez Rivas.
 Date: 6-Mar-2016
 """
 
+import math
+
 def divisible_by(n, numbers):
     """
     Determines if n is divisible by all the numbers
@@ -23,9 +25,7 @@ def divisible_by(n, numbers):
 
     return True
 
-
-if __name__ == "__main__":
-    # Solo debemos comprobar que es divisible entre 11 y 20 (p. ej., si es divisible por 20 => lo es por 2, 4, 5, 10)
+def first_method():
     numbers = list(range(11, 21))
 
     max = 1
@@ -34,6 +34,37 @@ if __name__ == "__main__":
 
     for i in range(numbers[-1], max + 1, numbers[-1]):
         if divisible_by(i, numbers):
-            print(i)
-            break
+            return i
 
+def second_method(primes, k):
+    """
+    Es un método optimizado. Se basa en descomponer la respuesta N en la multiplicación de los primos que componen
+    la secuencia: N = primes[i] ^ a[i], para todo primes[i] <= k.
+    :param primes: List of primes <= k
+    :param k: max. value
+    :return:
+    """
+    N = 1
+    i = 0
+    limit = math.sqrt(k)
+    check = True
+    a = [1 for n in range(0, len(primes))]
+    for p in primes:
+        if check:
+            if p <= limit:
+                # a[i] debe ser una potencia tal que primes[i] ^ a[i] <= k. Estableciendo la igualdad tenemos que
+                # primes[i] ^ a[i] = k ==> a[i]*log(primes[i]) = log(k)
+                a[i] = math.floor(math.log(k) / math.log(p))
+            else:
+                check = False
+        N *= math.pow(p, a[i])
+        i += 1
+    return N
+
+
+
+if __name__ == "__main__":
+    # Solo debemos comprobar que es divisible entre 11 y 20 (p. ej., si es divisible por 20 => lo es por 2, 4, 5, 10)
+    primes = [2, 3, 5, 7, 11, 13, 17, 19]
+    print(second_method(primes, 20)) # método optimizado
+    print(first_method())
